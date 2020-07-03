@@ -64,7 +64,7 @@
             }
 
             body {
-                background-color: black;
+                background-color: #212121;
             }
 
             .grid-container {
@@ -135,6 +135,7 @@
             }
 
             .slider {
+                -webkit-appearance: slider-vertical;
                 appearance: none;
                 height: 70%;
                 width: 9px;
@@ -153,7 +154,7 @@
             }
 
             .slider::-webkit-slider-thumb {
-                -webkit-appearance: none;
+                -webkit-appearance: slider-vertical;
                 appearance: none;
                 width: 16px;
                 height: 16px;
@@ -169,18 +170,34 @@
                 background: #fff;
                 cursor: pointer;
             }
+
+            #palette_overlay {
+                position: absolute;
+                right: 16px;
+                top: 60%;
+
+                margin: 0;
+            }
+
+            #palette_overlay > button {
+                display: block;
+            }
         </style>
     </head>
     <body onload="generateColorPalette()">
         <div class="grid-container" id="grid">
-            <div class="item" oncontextmenu="switchLocked(0); return false;"><button class="material-icons md-36 lock">lock_open</button><div class="tooltip">Click to copy</div></div>
-            <div class="item" oncontextmenu="switchLocked(1); return false;"><button class="material-icons md-36 lock">lock_open</button><div class="tooltip">Click to copy</div></div>
-            <div class="item" oncontextmenu="switchLocked(2); return false;"><button class="material-icons md-36 lock">lock_open</button><div class="tooltip">Click to copy</div></div>
+            <div class="item"><button class="material-icons md-36 lock">lock_open</button><div class="tooltip">Click to copy</div></div>
+            <div class="item"><button class="material-icons md-36 lock">lock_open</button><div class="tooltip">Click to copy</div></div>
+            <div class="item"><button class="material-icons md-36 lock">lock_open</button><div class="tooltip">Click to copy</div></div>
         </div>
         <button class="material-icons md-48" id="refresh" onclick="generateColorPalette()">refresh</button>
         <div id="settings_overlay">
             <input orient="vertical" type="range" min="0" max="100" value="90" class="slider" id="saturation">
             <input orient="vertical" type="range" min="0" max="100" value="80" class="slider" id="value">
+        </div>
+        <div id="palette_overlay">
+            <button class="material-icons md-48" id="add">add</button>
+            <button class="material-icons md-48" id="remove">remove</button>
         </div>
     </body>
     <script>
@@ -217,9 +234,10 @@
                         e.target.innerText = "lock_open";
                     }
                 }
-
             });
         }
+
+        
 
         function generateColorPalette() {
             const goldenRatio = 0.618033988749895;
@@ -236,16 +254,6 @@
 
                     items[i].style.backgroundColor = "hsl(" + hue + ", " + document.getElementById("saturation").value + "%, " + document.getElementById("value").value + "%)";
                 }
-            }
-        }
-
-        function switchLocked(pos) {
-            var lock = document.getElementById("grid").getElementsByClassName("item")[pos].getElementsByClassName("lock")[0];
-
-            if(lock.innerText == "lock_open") {
-                lock.innerText = "lock";
-            } else {
-                lock.innerText = "lock_open";
             }
         }
 
