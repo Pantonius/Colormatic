@@ -182,13 +182,21 @@
             #palette_overlay > button {
                 display: block;
             }
+
+            #add {
+                cursor: pointer;
+            }
+
+            #remove {
+                cursor: pointer;
+            }
         </style>
     </head>
-    <body onload="generateColorPalette()">
+    <body>
         <div class="grid-container" id="grid">
+            <!--<div class="item"><button class="material-icons md-36 lock">lock_open</button><div class="tooltip">Click to copy</div></div>
             <div class="item"><button class="material-icons md-36 lock">lock_open</button><div class="tooltip">Click to copy</div></div>
-            <div class="item"><button class="material-icons md-36 lock">lock_open</button><div class="tooltip">Click to copy</div></div>
-            <div class="item"><button class="material-icons md-36 lock">lock_open</button><div class="tooltip">Click to copy</div></div>
+            <div class="item"><button class="material-icons md-36 lock">lock_open</button><div class="tooltip">Click to copy</div></div>-->
         </div>
         <button class="material-icons md-48" id="refresh" onclick="generateColorPalette()">refresh</button>
         <div id="settings_overlay">
@@ -206,53 +214,95 @@
                 generateColorPalette();
         });
 
-        var items = document.getElementById("grid").getElementsByClassName("item");
-        for(var i = 0; i < items.length; i++) {
-            items[i].addEventListener("click", (e) => {
-                if(!e.target.matches(".lock")) {
-                    navigator.clipboard.writeText(elemRGBtoHex(e.target.style.backgroundColor));
-
-                    var pos = 0;
-                    var limit = 50;
-                    var id = setInterval(frame, .1);
-                    function frame() {
-                        if(pos == limit) {
-                            clearInterval(id);
-                            e.target.style.opacity = 1;
-                        } else if(pos < limit/2) {
-                            pos++;
-                            e.target.style.opacity = 1 - pos/200;
-                        } else {
-                            pos++;
-                            e.target.style.opacity = 1 + pos/200;
-                        }
-                    }
-                } else {
-                    if(e.target.innerText == "lock_open") {
-                        e.target.innerText = "lock";
-                    } else {
-                        e.target.innerText = "lock_open";
-                    }
-                }
-            });
+        for(var i = 0; i < 3; i++) {
+            addItem();
         }
 
-        
+        document.getElementById("add").addEventListener("click", () => {
+            addItem();
+        });
+
+        document.getElementById("remove").addEventListener("click", () => {
+            removeItem();
+        });
+
+        function addItem() {
+            var button = document.createElement("button");
+            button.classList.add("material-icons");
+            button.classList.add("md-36");
+            button.classList.add("lock");
+            button.appendChild(document.createTextNode("lock_open"));
+            
+            var tooltip = document.createElement("div");
+            tooltip.classList.add("tooltip");
+            tooltip.appendChild(document.createTextNode("Click to copy!"));;
+            
+            var div = document.createElement("div");
+            div.classList.add("item");
+            div.style.backgroundColor = generateColor();
+            div.addEventListener("click", (e) => {
+                onClick(e.target);
+            })
+
+            div.appendChild(button);
+            div.appendChild(tooltip);
+
+            document.getElementById("grid").appendChild(div);
+        }
+
+        function removeItem() {
+            document.getElementById("grid").removeChild(document.getElementById("grid").lastChild);
+        }
+
+        function onClick(element) {
+            if(element.matches(".item")) {
+                navigator.clipboard.writeText(elemRGBtoHex(element.style.backgroundColor));
+
+                var pos = 0;
+                var limit = 50;
+                var id = setInterval(frame, .1);
+                function frame() {
+                    if(pos == limit) {
+                        clearInterval(id);
+                        element.style.opacity = 1;
+                    } else if(pos < limit/2) {
+                        pos++;
+                        element.style.opacity = 1 - pos/200;
+                    } else {
+                        pos++;
+                        element.style.opacity = 1 + pos/200;
+                    }
+                }
+            } else {
+                if(element.innerText == "lock_open") {
+                    element.innerText = "lock";
+                } else {
+                    element.innerText = "lock_open";
+                }
+            }
+        }
+
+        function generateColor() {
+            const goldenRatio = 0.618033988749895;
+            var hue = Math.floor(((Math.random() + goldenRatio) % 1) * 360);
+
+            return "hsl(" + hue + ", " + document.getElementById("saturation").value + "%, " + document.getElementById("value").value + "%)";
+        }      
 
         function generateColorPalette() {
-            const goldenRatio = 0.618033988749895;
-            
-            var hues = [];
+            var items = document.getElementsByClassName("item");
+
+            var colors = [];
             for(var i = 0; i < items.length; i++) {
                 if(items[i].getElementsByClassName("lock")[0].innerText == "lock_open") {
-                    var hue;
+                    var color;
                     do {
-                        hue = Math.floor(((Math.random() + goldenRatio) % 1) * 360);
-                    } while(hues.indexOf(hue) != -1);
+                        color = generateColor();
+                    } while(colors.indexOf(color) != -1);
 
-                    hues.push(hue);
+                    colors.push(color);
 
-                    items[i].style.backgroundColor = "hsl(" + hue + ", " + document.getElementById("saturation").value + "%, " + document.getElementById("value").value + "%)";
+                    items[i].style.backgroundColor = color;
                 }
             }
         }
