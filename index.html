@@ -116,15 +116,14 @@
             }*/
 
             #refresh {
+                display: block;
+                position: fixed;
+                right: 16px;
+                bottom: 12px;
+
                 cursor: pointer;
 
                 font-size: 48px;
-
-                position: fixed;
-                bottom: 12px;
-                right: 16px;
-
-                z-index: 2; 
 
                 transform: rotate(0);
                 transition: transform 1s ease;
@@ -136,26 +135,24 @@
             }
 
             #settings_overlay {
+                display: block;
                 position: fixed;
-                top: 12px;
                 right: 16px;
+                top: 12px;
 
-                z-index: 2; 
-
-                height: 70%;
+                height: 50%;
             }
 
             .slider {
                 -webkit-appearance: slider-vertical;
                 appearance: none;
-                height: 70%;
+                height: 100%;
                 width: 9px;
+                margin: 0px 6px;
                 border-radius: 5px;
                 background-color: #414141;
                 outline: none;
                 opacity: .7;
-
-                margin: 0px 8px;
                 
                 transition: opacity .2s;
             }
@@ -183,13 +180,11 @@
             }
 
             #palette_overlay {
+                display: block;
                 position: fixed;
                 right: 16px;
-                top: 60%;
 
-                z-index: 2; 
-
-                margin: 0;
+                bottom: 64px;
             }
 
             #palette_overlay > button {
@@ -207,38 +202,18 @@
             }
 
             @media only screen and (max-width: 720px) {
-                .lock {
-                    font-size: 18px;
-                }
-
-                #refresh, #add, #remove {
-                    font-size: 24px;
+                #settings_overlay {
+                    left: 12px;
                 }
 
                 .slider {
-                    width: 4px;
                     margin: 0px 4px;
-                }
-
-                .slider::-webkit-slider-thumb {
-                    width: 8px;
-                    height: 8px;
-                }
-
-                .slider::-moz-range-thumb {
-                    width: 8px;
-                    height: 8px;
                 }
             }
         </style>
     </head>
     <body>
-        <div class="grid-container" id="grid">
-            <!--<div class="item"><button class="material-icons md-36 lock">lock_open</button><div class="tooltip">Click to copy</div></div>
-            <div class="item"><button class="material-icons md-36 lock">lock_open</button><div class="tooltip">Click to copy</div></div>
-            <div class="item"><button class="material-icons md-36 lock">lock_open</button><div class="tooltip">Click to copy</div></div>-->
-        </div>
-        <button class="material-icons" id="refresh" onclick="generateColorPalette()">refresh</button>
+        <div class="grid-container" id="grid"></div>
         <div id="settings_overlay">
             <input orient="vertical" type="range" min="0" max="100" value="90" class="slider" id="saturation">
             <input orient="vertical" type="range" min="0" max="100" value="80" class="slider" id="value">
@@ -247,6 +222,7 @@
             <button class="material-icons" id="add">add</button>
             <button class="material-icons" id="remove">remove</button>
         </div>
+        <button class="material-icons" id="refresh" onclick="generateColorPalette()">refresh</button>
     </body>
     <script>
         document.body.addEventListener("keydown", (e) => {
