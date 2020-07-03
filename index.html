@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Colormatic</title>
+        <link rel="icon" type="image/png" href="icon.png">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        
+        <style>
+            @font-face {
+                font-family: 'Material Icons';
+                font-style: normal;
+                font-weight: 400;
+                src: url(https://example.com/MaterialIcons-Regular.eot); /* For IE6-8 */
+                src:    local('Material Icons'),
+                        local('MaterialIcons-Regular'),
+                        url(https://example.com/MaterialIcons-Regular.woff2) format('woff2'),
+                        url(https://example.com/MaterialIcons-Regular.woff) format('woff'),
+                        url(https://example.com/MaterialIcons-Regular.ttf) format('truetype');
+            }
+
+            .material-icons {
+                background-color: transparent;
+                border: none;
+
+                font-family: 'Material Icons';
+                font-weight: normal;
+                font-style: normal;
+                font-size: 24px;  /* Preferred icon size */
+                display: inline-block;
+                line-height: 1;
+                text-transform: none;
+                letter-spacing: normal;
+                word-wrap: normal;
+                white-space: nowrap;
+                direction: ltr;
+
+                /* Support for all WebKit browsers. */
+                -webkit-font-smoothing: antialiased;
+                /* Support for Safari and Chrome. */
+                text-rendering: optimizeLegibility;
+                
+                /* Support for Firefox. */
+                -moz-osx-font-smoothing: grayscale;
+
+                /* Support for IE. */
+                font-feature-settings: 'liga';
+            }
+
+            .material-icons.md-18 { font-size: 18px; }
+            .material-icons.md-24 { font-size: 24px; }
+            .material-icons.md-36 { font-size: 36px; }
+            .material-icons.md-48 { font-size: 48px; }
+
+            * {
+                padding: 0;
+                margin: 0;
+            }
+
+            html, body {
+                height: 100%;
+            }
+
+            body {
+                background-color: black;
+            }
+
+            .grid-container {
+                display: grid;
+                grid-template-columns: auto auto auto;
+
+                height: 100%;
+            }
+
+            .lock {
+                cursor: pointer;
+
+                position: relative;
+                top: 12px;
+                left: 16px;
+            }
+
+            .tooltip {
+                position: relative;
+
+                visibility: hidden;
+                opacity: 0;
+                z-index: 1;
+
+                color: white;
+                font-family: Arial, Helvetica, sans-serif;
+                text-align: center;
+
+                background-color: rgba(0, 0, 0, 0.4);
+
+                margin: 0;
+                top: 50%;
+                left: 50%;
+                -ms-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+                padding: 10px;
+
+                transition: opacity 1s;
+            }
+
+            .grid-container .item:hover .tooltip {
+                visibility: visible;
+                opacity: 1;
+            }
+
+            #refresh {
+                cursor: pointer;
+
+                position: absolute;
+                bottom: 12px;
+                right: 16px;
+
+                transform: rotate(0);
+                transition: transform 1s ease;
+            }
+
+            #refresh:hover {
+                transform: rotate(720deg);
+                transition: transform 1s ease;
+            }
+
+            #settings_overlay {
+                position: absolute;
+                top: 12px;
+                right: 16px;
+
+                height: 70%;
+            }
+
+            .slider {
+                appearance: none;
+                height: 70%;
+                width: 9px;
+                border-radius: 5px;
+                background-color: #414141;
+                outline: none;
+                opacity: .7;
+
+                margin: 0px 8px;
+                
+                transition: opacity .2s;
+            }
+
+            .slider:hover {
+                opacity: 1;
+            }
+
+            .slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                background: #fff;
+                cursor: pointer;
+            }
+
+            .slider::-moz-range-thumb {
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                background: #fff;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body onload="generateColorPalette()">
+        <div class="grid-container" id="grid">
+            <div class="item" oncontextmenu="switchLocked(0); return false;"><button class="material-icons md-36 lock">lock_open</button><div class="tooltip">Click to copy</div></div>
+            <div class="item" oncontextmenu="switchLocked(1); return false;"><button class="material-icons md-36 lock">lock_open</button><div class="tooltip">Click to copy</div></div>
+            <div class="item" oncontextmenu="switchLocked(2); return false;"><button class="material-icons md-36 lock">lock_open</button><div class="tooltip">Click to copy</div></div>
+        </div>
+        <button class="material-icons md-48" id="refresh" onclick="generateColorPalette()">refresh</button>
+        <div id="settings_overlay">
+            <input orient="vertical" type="range" min="0" max="100" value="90" class="slider" id="saturation">
+            <input orient="vertical" type="range" min="0" max="100" value="80" class="slider" id="value">
+        </div>
+    </body>
+    <script>
+        document.body.addEventListener("keydown", (e) => {
+            if(e.which == 13)
+                generateColorPalette();
+        });
+
+        var items = document.getElementById("grid").getElementsByClassName("item");
+        for(var i = 0; i < items.length; i++) {
+            items[i].addEventListener("click", (e) => {
+                if(!e.target.matches(".lock")) {
+                    navigator.clipboard.writeText(elemRGBtoHex(e.target.style.backgroundColor));
+
+                    var pos = 0;
+                    var limit = 50;
+                    var id = setInterval(frame, .1);
+                    function frame() {
+                        if(pos == limit) {
+                            clearInterval(id);
+                            e.target.style.opacity = 1;
+                        } else if(pos < limit/2) {
+                            pos++;
+                            e.target.style.opacity = 1 - pos/200;
+                        } else {
+                            pos++;
+                            e.target.style.opacity = 1 + pos/200;
+                        }
+                    }
+                } else {
+                    if(e.target.innerText == "lock_open") {
+                        e.target.innerText = "lock";
+                    } else {
+                        e.target.innerText = "lock_open";
+                    }
+                }
+
+            });
+        }
+
+        function generateColorPalette() {
+            const goldenRatio = 0.618033988749895;
+            
+            var hues = [];
+            for(var i = 0; i < items.length; i++) {
+                if(items[i].getElementsByClassName("lock")[0].innerText == "lock_open") {
+                    var hue;
+                    do {
+                        hue = Math.floor(((Math.random() + goldenRatio) % 1) * 360);
+                    } while(hues.indexOf(hue) != -1);
+
+                    hues.push(hue);
+
+                    items[i].style.backgroundColor = "hsl(" + hue + ", " + document.getElementById("saturation").value + "%, " + document.getElementById("value").value + "%)";
+                }
+            }
+        }
+
+        function switchLocked(pos) {
+            var lock = document.getElementById("grid").getElementsByClassName("item")[pos].getElementsByClassName("lock")[0];
+
+            if(lock.innerText == "lock_open") {
+                lock.innerText = "lock";
+            } else {
+                lock.innerText = "lock_open";
+            }
+        }
+
+        function elemRGBtoHex(color) {
+            var rgb = color.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+
+            delete(rgb[0]);
+
+            for(var i = 1; i <= 3; i++) {
+                rgb[i] = parseInt(rgb[i]).toString(16);
+
+                if(rgb[i].length == 1)
+                    rgb[i] = "0" + rgb[i];
+            }
+
+            return "#" + rgb.join("");
+        }
+    </script>
+</html>
