@@ -74,14 +74,21 @@
                 height: 100%;
             }
 
+            .grid-container .item { 
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
             .lock {
                 cursor: pointer;
 
                 position: relative;
-                top: 12px;
-                left: 16px;
+                /*top: 12px;
+                left: 16px;*/
             }
 
+            /*
             .tooltip {
                 position: relative;
 
@@ -96,10 +103,6 @@
                 background-color: rgba(0, 0, 0, 0.4);
 
                 margin: 0;
-                top: 50%;
-                left: 50%;
-                -ms-transform: translate(-50%, -50%);
-                transform: translate(-50%, -50%);
                 padding: 10px;
 
                 transition: opacity 1s;
@@ -108,7 +111,7 @@
             .grid-container .item:hover .tooltip {
                 visibility: visible;
                 opacity: 1;
-            }
+            }*/
 
             #refresh {
                 cursor: pointer;
@@ -239,9 +242,9 @@
             button.classList.add("lock");
             button.appendChild(document.createTextNode("lock_open"));
             
-            var tooltip = document.createElement("div");
+            /*var tooltip = document.createElement("div");
             tooltip.classList.add("tooltip");
-            tooltip.appendChild(document.createTextNode("Click to copy!"));;
+            tooltip.appendChild(document.createTextNode("Click to copy!"));*/
             
             var div = document.createElement("div");
             div.classList.add("item");
@@ -251,7 +254,7 @@
             })
 
             div.appendChild(button);
-            div.appendChild(tooltip);
+            //div.appendChild(tooltip);
 
             document.getElementById("grid").appendChild(div);
         }
